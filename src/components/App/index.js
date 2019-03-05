@@ -1,27 +1,33 @@
 import React from 'react';
-import logo from './logo.svg';
+import {
+  BrowserRouter as Router,
+  Route,
+} from 'react-router-dom';
+
+import Navigation from '../Navigation';
+import LandingPage from '../Landing';
+import SignUpPage from '../SignUp';
+import SignInPage from '../SignIn';
+import PasswordForgetPage from '../PasswordForget';
+import HomePage from '../Home';
+import AccountPage from '../Account';
 import './App.css';
 
+import * as ROUTES from '../../constants/routes';
+
 const App = () => (
-  <div className="App">
-    <header className="App-header">
-      <h1>ОАО "ГСКБ"</h1>
-      <h2>Испытательный центр</h2>
-      <h3>Химическая лаборатория "Топливо"</h3>
-      <img src={logo} className="App-logo" alt="logo" />
-      <p>
-        Программа (база данных) учета оборудования и расходных материалов (реактивов).
-      </p>
-      <a
-        className="App-link"
-        href="https://reactjs.org"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Learn React
-      </a>
-    </header>
-  </div>
+  <Router>
+    <Navigation />
+
+    <hr />
+
+    <Route exact path={ROUTES.LANDING} component={LandingPage} />
+    <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
+    <Route path={ROUTES.SIGN_IN} component={SignInPage} />
+    <Route path={ROUTES.PASSWORD_FORGET} component={PasswordForgetPage} />
+    <Route path={ROUTES.HOME} component={HomePage} />
+    <Route path={ROUTES.ACCOUNT} component={AccountPage} />
+  </Router>
 );
 
 export default App;

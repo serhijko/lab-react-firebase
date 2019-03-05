@@ -1,8 +1,9 @@
 {
   "name": "lab-react-firebase",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "dependencies": {
+    "firebase": "^5.8.5",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
     "react-router-dom": "^4.3.1",

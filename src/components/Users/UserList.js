@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
+import { SignUpLink } from '../SignUp';
 
 class UserList extends Component {
   constructor(props) {
@@ -47,13 +48,13 @@ class UserList extends Component {
           {users.map(user => (
             <li key={user.uid}>
               <span>
-                <strong>ID:</strong> {user.uid}
+                <strong>ID:</strong> {user.uid} {' '}
               </span>
               <span>
-                <strong>E-Mail:</strong> {user.email}
+                <strong>E-Mail:</strong> {user.email} {' '}
               </span>
               <span>
-                <strong>Username:</strong> {user.username.firstName + ' ' + user.username.lastName}
+                <strong>Username:</strong> {user.username.firstName + ' ' + user.username.lastName} {' '}
               </span>
               <span>
                 <Link
@@ -68,6 +69,8 @@ class UserList extends Component {
             </li>
           ))}
         </ul>
+
+        <SignUpLink />
       </div>
     );
   }

@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 
+import { withAuthorization } from '../Session';
 import { withFirebase } from '../Firebase';
+import * as ROLES from '../../constants/roles';
 import * as ROUTES from '../../constants/routes';
 
 const SignUpPage = () => (
@@ -44,10 +46,6 @@ class SignUpFormBase extends Component {
       })
       .then(() => {
         return this.props.firebase.doSendEmailVerification();
-      })
-      .then(() => {
-        this.setState({ ...INITIAL_STATE });
-        this.props.history.push(ROUTES.HOME);
       })
       .catch(error => {
         this.setState({ error });
@@ -125,13 +123,17 @@ class SignUpFormBase extends Component {
 
 const SignUpLink = () => (
   <p>
-    Don't have an account? <Link to={ROUTES.SIGN_UP}>Sign Up</Link>
+    <Link to={ROUTES.SIGN_UP}>Sign Up a New User</Link>
   </p>
 );
+
+const condition = authUser =>
+  authUser && authUser.roles.includes(ROLES.ADMIN);
 
 const SignUpForm = compose(
   withRouter,
   withFirebase,
+  withAuthorization(condition),
 )(SignUpFormBase);
 
 export default SignUpPage;

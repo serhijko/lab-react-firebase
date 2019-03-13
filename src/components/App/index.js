@@ -12,6 +12,7 @@ import PasswordForgetPage from '../PasswordForget';
 import HomePage from '../Home';
 import AccountPage from '../Account';
 import AdminPage from '../Admin';
+import Journal_T12 from '../Journals/Journal_T12';
 import './App.css';
 
 import * as ROUTES from '../../constants/routes';
@@ -34,6 +35,7 @@ const App = () => (
       <Route path={ROUTES.HOME} component={HomePage} />
       <Route path={ROUTES.ACCOUNT} component={AccountPage} />
       <Route path={ROUTES.ADMIN} component={AdminPage} />
+      <Route path={ROUTES.JOURNAL_T12} component={Journal_T12} />
     </div>
   </Router>
 );

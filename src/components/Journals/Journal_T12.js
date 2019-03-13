@@ -98,6 +98,10 @@ class Journal_T12 extends Component {
     event.preventDefault();
   };
 
+  onRemoveEquipment = uid => {
+    this.props.firebase.equipment(uid).remove();
+  };
+
   render() {
     const {
       loading,
@@ -157,7 +161,11 @@ class Journal_T12 extends Component {
       
                 {equipments ? (
                   equipments.map(equipment => (
-                    <EquipmentItem key={equipment.uid} equipment={equipment} />
+                    <EquipmentItem
+                      key={equipment.uid}
+                      equipment={equipment}
+                      onRemoveEquipment={this.onRemoveEquipment}
+                    />
                   ))
                 ) : (
                   <div>Нет ИО и СИ ...</div>

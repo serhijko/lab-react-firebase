@@ -1,6 +1,6 @@
 import React from 'react';
 
-const EquipmentItem = ({ equipment }) => (
+const EquipmentItem = ({ equipment, onRemoveEquipment }) => (
   <tr>
     <td>{equipment.number}</td>
     <td>{equipment.name}</td>
@@ -12,7 +12,16 @@ const EquipmentItem = ({ equipment }) => (
     <td>{equipment.nextCalibration}</td>
     <td>{equipment.puttingInStorage}</td>
     <td>{equipment.removingFromStorage}</td>
-    <td>{equipment.responsible} {equipment.userId}</td>
+    <td>
+      {equipment.responsible}
+      {equipment.userId}
+      <button
+        type="button"
+        onClick={() => onRemoveEquipment(equipment.uid)}
+      >
+        Удалить СИ/ИО
+      </button>
+    </td>
     <td>{equipment.notes}</td>
   </tr>
 );

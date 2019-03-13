@@ -1,6 +1,6 @@
 {
   "name": "lab-react-firebase",
-  "version": "0.12.0",
+  "version": "0.12.2",
   "private": true,
   "dependencies": {
     "firebase": "^5.8.5",

@@ -1,3 +1,3 @@
-import EquipmentList from './EquipmentList';
+import EquipmentItem from './EquipmentItem';
 
-export { EquipmentList };
+export { EquipmentItem };

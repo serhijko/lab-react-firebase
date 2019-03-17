@@ -9,6 +9,7 @@ import {
 import { withFirebase } from '../Firebase';
 import { EquipmentItem } from '../Equipments';
 import './Journal_T12.css';
+import nextDate from '../Equipments/nextCalibrationCalculation';
 
 class Journal_T12 extends Component {
   constructor(props) {
@@ -17,18 +18,18 @@ class Journal_T12 extends Component {
     this.state = {
       loading: false,
       equipments: [],
-      number: '',
-      name: '',
-      mark: '',
-      serial: '',
-      release: '',
-      periodicity: '',
-      lastCalibration: '',
-      nextCalibration: '',
-      puttingInStorage: '',
-      removingFromStorage: '',
-      responsible: '',
-      notes: '',
+      data01: '',
+      data02: '',
+      data03: '',
+      data04: '',
+      data05: '',
+      data06: '',
+      data07: '',
+      data08: '',
+      data09: '',
+      data10: '',
+      data12: '',
+      editMode: false,
     };
   }
 
@@ -65,37 +66,87 @@ class Journal_T12 extends Component {
 
   onCreateEquipment = (event, authUser) => {
     this.props.firebase.equipments().push({
-      number: this.state.number,
-      name: this.state.name,
-      mark: this.state.mark,
-      serial: this.state.serial,
-      release: this.state.release,
-      periodicity: this.state.periodicity,
-      lastCalibration: this.state.lastCalibration,
-      nextCalibration: this.state.nextCalibration,
-      puttingInStorage: this.state.puttingInStorage,
-      removingFromStorage: this.state.removingFromStorage,
-      responsible: this.state.responsible,
-      notes: this.state.notes,
-      userId: authUser.uid,
+      createdAt: this.props.firebase.serverValue.TIMESTAMP,
+      createdBy: authUser.uid,
+      data01: this.state.data01,
+      data02: this.state.data02,
+      data03: this.state.data03,
+      data04: this.state.data04,
+      data05: this.state.data05,
+      data06: this.state.data06,
+      data07: this.state.data07,
+      data08: nextDate(this.state.data06, this.state.data07),
+      data09: this.state.data09,
+      data10: this.state.data10,
+      data12: this.state.data12,
     });
 
     this.setState({
-      number: '',
-      name: '',
-      mark: '',
-      serial: '',
-      release: '',
-      periodicity: '',
-      lastCalibration: '',
-      nextCalibration: '',
-      puttingInStorage: '',
-      removingFromStorage: '',
-      responsible: '',
-      notes: '',
+      data01: '',
+      data02: '',
+      data03: '',
+      data04: '',
+      data05: '',
+      data06: '',
+      data07: '',
+      data08: '',
+      data09: '',
+      data10: '',
+      data12: '',
     });
 
     event.preventDefault();
+  };
+
+  onToggleEditMode = () => {
+    this.setState(state => ({
+      editMode: !state.editMode,
+    }));
+  };
+
+  onEditData06 = (equipment, data06, data08, authUser) => {
+    this.props.firebase.equipment(equipment.uid).set({
+      ...equipment,
+      data06,
+      data08,
+      editedAt: this.props.firebase.serverValue.TIMESTAMP,
+      editedBy: authUser.uid,
+    });
+  };
+
+  onEditData07 = (equipment, data07, data08, authUser) => {
+    this.props.firebase.equipment(equipment.uid).set({
+      ...equipment,
+      data07,
+      data08,
+      editedAt: this.props.firebase.serverValue.TIMESTAMP,
+      editedBy: authUser.uid,
+    });
+  };
+
+  onEditData09 = (equipment, data09, authUser) => {
+    this.props.firebase.equipment(equipment.uid).set({
+      ...equipment,
+      data09,
+      editedAt: this.props.firebase.serverValue.TIMESTAMP,
+      editedBy: authUser.uid,
+    });
+  };
+
+  onEditData10 = (equipment, data10, authUser) => {
+    this.props.firebase.equipment(equipment.uid).set({
+      ...equipment,
+      data10,
+      editedAt: this.props.firebase.serverValue.TIMESTAMP,
+      editedBy: authUser.uid,
+    });
+  };
+
+  onEditData12 = (equipment, data12) => {
+    this.props.firebase.equipment(equipment.uid).set({
+      ...equipment,
+      data12,
+    });
   };
 
   onRemoveEquipment = uid => {
@@ -106,18 +157,17 @@ class Journal_T12 extends Component {
     const {
       loading,
       equipments,
-      number,
-      name,
-      mark,
-      serial,
-      release,
-      periodicity,
-      lastCalibration,
-      nextCalibration,
-      puttingInStorage,
-      removingFromStorage,
-      responsible,
-      notes,
+      data01,
+      data02,
+      data03,
+      data04,
+      data05,
+      data06,
+      data07,
+      data09,
+      data10,
+      data12,
+      editMode,
     } = this.state;
 
     return (
@@ -125,7 +175,17 @@ class Journal_T12 extends Component {
         {authUser => (
           <div>
             <h1>Химическая лаборатория "Топливо"</h1>
-            <h2>Журнал учета оборудования (СИ и ИО)</h2>
+            <h2>Журнал учета оборудования (СИ и ИО)
+            <button
+              type="button"
+              onClick={this.onToggleEditMode}
+            >
+              {!editMode ? (
+                'Включить режим правки таблицы'
+              ) : (
+                'Выключить режим правки таблицы'
+              )}
+            </button></h2>
     
             <form onSubmit={event => this.onCreateEquipment(event, authUser)}>
               <table className="table">
@@ -135,11 +195,11 @@ class Journal_T12 extends Component {
                   <th>Марка, тип</th>
                   <th>Заводской номер (инв. номер)</th>
                   <th>Год выпуска (ввода в эксплу-атацию)</th>
-                  <th>Периодич-ность метролог. аттестации, поверки, калибровки, мес.</th>
+                  <th>Периодичность метролог. аттестации, поверки, калибровки, мес.</th>
                   <th>Дата последней аттестации, поверки, калибровки</th>
                   <th>Дата следующей аттестации, поверки, калибровки</th>
-                  <th>Дата консер-вации</th>
-                  <th>Дата расконсер-вации</th>
+                  <th>Дата консервации</th>
+                  <th>Дата расконсервации</th>
                   <th>Ответственный</th>
                   <th>Примечания</th>
                 </tr>
@@ -157,13 +217,20 @@ class Journal_T12 extends Component {
                   <th>11</th>
                   <th>12</th>
                 </tr>
-                {loading && <div>Loading ...</div>}
+                {loading && <div>Загрузка...</div>}
       
                 {equipments ? (
                   equipments.map(equipment => (
                     <EquipmentItem
                       key={equipment.uid}
+                      authUser={authUser}
                       equipment={equipment}
+                      editMode={editMode}
+                      onEditData06={this.onEditData06}
+                      onEditData07={this.onEditData07}
+                      onEditData09={this.onEditData09}
+                      onEditData10={this.onEditData10}
+                      onEditData12={this.onEditData12}
                       onRemoveEquipment={this.onRemoveEquipment}
                     />
                   ))
@@ -174,112 +241,99 @@ class Journal_T12 extends Component {
                 <tr>
                   <td>
                     <input
-                      name="number"
+                      name="data01"
                       size="1"
                       type="text"
-                      value={number}
+                      value={data01}
                       onChange={this.onChange}
                     />
                   </td>
                   <td>
                     <input
-                      name="name"
+                      name="data02"
                       size="12"
                       type="text"
-                      value={name}
+                      value={data02}
                       onChange={this.onChange}
                     />
                   </td>
                   <td>
                     <input
-                      name="mark"
+                      name="data03"
                       size="8"
                       type="text"
-                      value={mark}
+                      value={data03}
                       onChange={this.onChange}
                     />
                   </td>
                   <td>
                     <input
-                      name="serial"
+                      name="data04"
                       size="8"
                       type="text"
-                      value={serial}
+                      value={data04}
                       onChange={this.onChange}
                     />
                   </td>
                   <td>
                     <input
-                      name="release"
+                      name="data05"
                       size="10"
                       type="text"
-                      value={release}
+                      value={data05}
                       onChange={this.onChange}
                     />
                   </td>
                   <td>
                     <input
-                      name="periodicity"
-                      size="10"
-                      type="text"
-                      value={periodicity}
+                      name="data06"
+                      size="2"
+                      type="number"
+                      step="12"
+                      value={data06}
                       onChange={this.onChange}
                     />
                   </td>
                   <td>
                     <input
-                      name="lastCalibration"
+                      name="data07"
                       size="10"
-                      type="text"
-                      value={lastCalibration}
+                      type="date"
+                      value={data07}
+                      onChange={this.onChange}
+                    />
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                    <input
+                      name="data09"
+                      size="10"
+                      type="date"
+                      value={data09}
                       onChange={this.onChange}
                     />
                   </td>
                   <td>
                     <input
-                      name="nextCalibration"
+                      name="data10"
                       size="10"
-                      type="text"
-                      value={nextCalibration}
+                      type="date"
+                      value={data10}
                       onChange={this.onChange}
                     />
                   </td>
                   <td>
-                    <input
-                      name="puttingInStorage"
-                      size="10"
-                      type="text"
-                      value={puttingInStorage}
-                      onChange={this.onChange}
-                    />
+                    <button type="submit">Добавить</button>
                   </td>
                   <td>
                     <input
-                      name="removingFromStorage"
+                      name="data12"
                       size="10"
                       type="text"
-                      value={removingFromStorage}
+                      value={data12}
                       onChange={this.onChange}
                     />
-                  </td>
-                  <td>
-                    <input
-                      name="responsible"
-                      size="10"
-                      type="text"
-                      value={responsible}
-                      onChange={this.onChange}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      name="notes"
-                      size="10"
-                      type="text"
-                      value={notes}
-                      onChange={this.onChange}
-                    />
-                    <button type="submit">+</button>
                   </td>
                 </tr>
               </table>

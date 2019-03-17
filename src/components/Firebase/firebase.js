@@ -15,6 +15,12 @@ class Firebase {
   constructor() {
     app.initializeApp(config);
 
+    /* Helper */
+
+    this.serverValue = app.database.ServerValue;
+
+    /* Firebase APIs */
+
     this.auth = app.auth();
     this.db = app.database();
   }

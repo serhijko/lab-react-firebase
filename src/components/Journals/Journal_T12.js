@@ -30,15 +30,22 @@ class Journal_T12 extends Component {
       data10: '',
       data12: '',
       editMode: false,
+      start: 0,
     };
   }
 
   componentDidMount() {
+    this.onListenForEquipments();
+  }
+
+  onListenForEquipments() {
     this.setState({ loading: true });
 
     this.props.firebase
       .equipments()
       .orderByChild('data01')
+      .startAt(this.state.start)
+      .endAt(this.state.start + 5)
       .on('value', snapshot => {
         const equipmentObject = snapshot.val();
         
@@ -71,7 +78,7 @@ class Journal_T12 extends Component {
     this.props.firebase.equipments().push({
       createdAt: this.props.firebase.serverValue.TIMESTAMP,
       createdBy: authUser.uid,
-      data01: this.state.data01,
+      data01: this.state.data01/1,
       data02: this.state.data02,
       data03: this.state.data03,
       data04: this.state.data04,
@@ -156,6 +163,20 @@ class Journal_T12 extends Component {
     this.props.firebase.equipment(uid).remove();
   };
 
+  onPrevPage = () => {
+    this.setState(
+      state => ({ start: state.start - 5 }),
+      this.onListenForEquipments,
+    );
+  };
+
+  onNextPage = () => {
+    this.setState(
+      state => ({ start: state.start + 5 }),
+      this.onListenForEquipments,
+    );
+  };
+
   render() {
     const {
       loading,
@@ -190,6 +211,11 @@ class Journal_T12 extends Component {
               )}
             </button></h2>
     
+            {!loading && equipments && (
+              <button type="button" onClick={this.onPrevPage}>
+                Предыдущие
+              </button>
+            )}
             <form onSubmit={event => this.onCreateEquipment(event, authUser)}>
               <table className="table">
                 <thead>
@@ -345,6 +371,11 @@ class Journal_T12 extends Component {
                 </tbody>
               </table>
             </form>
+            {!loading && equipments && (
+              <button type="button" onClick={this.onNextPage}>
+                Следующие
+              </button>
+            )}
           </div>
         )}
       </AuthUserContext.Consumer>

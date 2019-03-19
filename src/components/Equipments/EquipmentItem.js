@@ -215,7 +215,7 @@ class EquipmentItem extends Component {
           ))}
         </td>
         <td>
-          {equipment.createdBy}
+          {equipment.user.username.lastName || equipment.user.createdBy}
           {editMode && (
             <button
               type="button"
@@ -248,7 +248,7 @@ class EquipmentItem extends Component {
             <button onClick={this.onToggleEditMode12}>Править</button>
           ))}
           {equipment.data12 && equipment.editedAt && ' '}
-          {equipment.editedAt && <span>Изменено {toRussianDateFormat(equipment.editedAt)} {equipment.editedBy}</span>}
+          {equipment.editedAt && <span>Изменено {toRussianDateFormat(equipment.editedAt)} {equipment.user.username.lastName || equipment.user.editedBy}</span>}
         </td>
       </tr>
     );

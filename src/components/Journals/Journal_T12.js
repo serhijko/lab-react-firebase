@@ -31,11 +31,21 @@ class Journal_T12 extends Component {
       data12: '',
       editMode: false,
       start: 0,
+      users: null,
     };
   }
 
   componentDidMount() {
+    this.onListenForUsers();
     this.onListenForEquipments();
+  }
+  
+  onListenForUsers() {
+    this.props.firebase.users().on('value', snapshot => {
+      this.setState({
+        users: snapshot.val(),
+      });
+    });
   }
 
   onListenForEquipments() {
@@ -68,6 +78,7 @@ class Journal_T12 extends Component {
 
   componentWillUnmount() {
     this.props.firebase.equipments().off();
+    this.props.firebase.users().off();
   }
 
   onChange = event => {
@@ -192,6 +203,7 @@ class Journal_T12 extends Component {
       data10,
       data12,
       editMode,
+      users,
     } = this.state;
 
     return (
@@ -252,7 +264,12 @@ class Journal_T12 extends Component {
                   {loading && <tr><td colSpan="12">Загрузка...</td></tr>}
         
                   {equipments ? (
-                    equipments.map(equipment => (
+                    equipments.map(equipment => ({
+                      ...equipment,
+                      user: users
+                        ? users[equipment.createdBy]
+                        : { createdBy: equipment.createdBy }
+                    })).map(equipment => (
                       <EquipmentItem
                         key={equipment.uid}
                         authUser={authUser}

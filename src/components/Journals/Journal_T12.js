@@ -36,24 +36,27 @@ class Journal_T12 extends Component {
   componentDidMount() {
     this.setState({ loading: true });
 
-    this.props.firebase.equipments().on('value', snapshot => {
-      const equipmentObject = snapshot.val();
+    this.props.firebase
+      .equipments()
+      .orderByChild('data01')
+      .on('value', snapshot => {
+        const equipmentObject = snapshot.val();
+        
+        if (equipmentObject) {
+          // convert equipment list from snapshot
+          const equipmentList = Object.keys(equipmentObject).map(key => ({
+            ...equipmentObject[key],
+            uid: key,
+          }));
 
-      if (equipmentObject) {
-        // convert equipment list from snapshot
-        const equipmentList = Object.keys(equipmentObject).map(key => ({
-          ...equipmentObject[key],
-          uid: key,
-        }));
-
-        this.setState({
-          equipments: equipmentList,
-          loading: false,
-        });
-      } else {
-        this.setState({ equipments: null, loading: false });
-      }
-    });
+          this.setState({
+            equipments: equipmentList,
+            loading: false,
+          });
+        } else {
+          this.setState({ equipments: null, loading: false });
+        }
+      });
   }
 
   componentWillUnmount() {
@@ -189,153 +192,157 @@ class Journal_T12 extends Component {
     
             <form onSubmit={event => this.onCreateEquipment(event, authUser)}>
               <table className="table">
-                <tr>
-                  <th>№ п/п</th>
-                  <th>Наименование оборудования (ИО, СИ)</th>
-                  <th>Марка, тип</th>
-                  <th>Заводской номер (инв. номер)</th>
-                  <th>Год выпуска (ввода в эксплу-атацию)</th>
-                  <th>Периодичность метролог. аттестации, поверки, калибровки, мес.</th>
-                  <th>Дата последней аттестации, поверки, калибровки</th>
-                  <th>Дата следующей аттестации, поверки, калибровки</th>
-                  <th>Дата консервации</th>
-                  <th>Дата расконсервации</th>
-                  <th>Ответственный</th>
-                  <th>Примечания</th>
-                </tr>
-                <tr>
-                  <th>1</th>
-                  <th>2</th>
-                  <th>3</th>
-                  <th>4</th>
-                  <th>5</th>
-                  <th>6</th>
-                  <th>7</th>
-                  <th>8</th>
-                  <th>9</th>
-                  <th>10</th>
-                  <th>11</th>
-                  <th>12</th>
-                </tr>
-                {loading && <div>Загрузка...</div>}
-      
-                {equipments ? (
-                  equipments.map(equipment => (
-                    <EquipmentItem
-                      key={equipment.uid}
-                      authUser={authUser}
-                      equipment={equipment}
-                      editMode={editMode}
-                      onEditData06={this.onEditData06}
-                      onEditData07={this.onEditData07}
-                      onEditData09={this.onEditData09}
-                      onEditData10={this.onEditData10}
-                      onEditData12={this.onEditData12}
-                      onRemoveEquipment={this.onRemoveEquipment}
-                    />
-                  ))
-                ) : (
-                  <div>Нет ИО и СИ ...</div>
-                )}
-      
-                <tr>
-                  <td>
-                    <input
-                      name="data01"
-                      size="1"
-                      type="text"
-                      value={data01}
-                      onChange={this.onChange}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      name="data02"
-                      size="12"
-                      type="text"
-                      value={data02}
-                      onChange={this.onChange}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      name="data03"
-                      size="8"
-                      type="text"
-                      value={data03}
-                      onChange={this.onChange}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      name="data04"
-                      size="8"
-                      type="text"
-                      value={data04}
-                      onChange={this.onChange}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      name="data05"
-                      size="10"
-                      type="text"
-                      value={data05}
-                      onChange={this.onChange}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      name="data06"
-                      size="2"
-                      type="number"
-                      step="12"
-                      value={data06}
-                      onChange={this.onChange}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      name="data07"
-                      size="10"
-                      type="date"
-                      value={data07}
-                      onChange={this.onChange}
-                    />
-                  </td>
-                  <td>
-                  </td>
-                  <td>
-                    <input
-                      name="data09"
-                      size="10"
-                      type="date"
-                      value={data09}
-                      onChange={this.onChange}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      name="data10"
-                      size="10"
-                      type="date"
-                      value={data10}
-                      onChange={this.onChange}
-                    />
-                  </td>
-                  <td>
-                    <button type="submit">Добавить</button>
-                  </td>
-                  <td>
-                    <input
-                      name="data12"
-                      size="10"
-                      type="text"
-                      value={data12}
-                      onChange={this.onChange}
-                    />
-                  </td>
-                </tr>
+                <thead>
+                  <tr>
+                    <th>№ п/п</th>
+                    <th>Наименование оборудования (ИО, СИ)</th>
+                    <th>Марка, тип</th>
+                    <th>Заводской номер (инв. номер)</th>
+                    <th>Год выпуска (ввода в эксплу-атацию)</th>
+                    <th>Периодичность метролог. аттестации, поверки, калибровки, мес.</th>
+                    <th>Дата последней аттестации, поверки, калибровки</th>
+                    <th>Дата следующей аттестации, поверки, калибровки</th>
+                    <th>Дата консервации</th>
+                    <th>Дата расконсервации</th>
+                    <th>Ответственный</th>
+                    <th>Примечания</th>
+                  </tr>
+                  <tr>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>4</th>
+                    <th>5</th>
+                    <th>6</th>
+                    <th>7</th>
+                    <th>8</th>
+                    <th>9</th>
+                    <th>10</th>
+                    <th>11</th>
+                    <th>12</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading && <tr><td colSpan="12">Загрузка...</td></tr>}
+        
+                  {equipments ? (
+                    equipments.map(equipment => (
+                      <EquipmentItem
+                        key={equipment.uid}
+                        authUser={authUser}
+                        equipment={equipment}
+                        editMode={editMode}
+                        onEditData06={this.onEditData06}
+                        onEditData07={this.onEditData07}
+                        onEditData09={this.onEditData09}
+                        onEditData10={this.onEditData10}
+                        onEditData12={this.onEditData12}
+                        onRemoveEquipment={this.onRemoveEquipment}
+                      />
+                    ))
+                  ) : (
+                    <tr><td colSpan="12">Нет ИО и СИ ...</td></tr>
+                  )}
+                
+                  <tr>
+                    <td>
+                      <input
+                        name="data01"
+                        size="1"
+                        type="text"
+                        value={data01}
+                        onChange={this.onChange}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        name="data02"
+                        size="12"
+                        type="text"
+                        value={data02}
+                        onChange={this.onChange}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        name="data03"
+                        size="8"
+                        type="text"
+                        value={data03}
+                        onChange={this.onChange}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        name="data04"
+                        size="8"
+                        type="text"
+                        value={data04}
+                        onChange={this.onChange}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        name="data05"
+                        size="10"
+                        type="text"
+                        value={data05}
+                        onChange={this.onChange}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        name="data06"
+                        size="2"
+                        type="number"
+                        step="12"
+                        value={data06}
+                        onChange={this.onChange}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        name="data07"
+                        size="10"
+                        type="date"
+                        value={data07}
+                        onChange={this.onChange}
+                      />
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                      <input
+                        name="data09"
+                        size="10"
+                        type="date"
+                        value={data09}
+                        onChange={this.onChange}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        name="data10"
+                        size="10"
+                        type="date"
+                        value={data10}
+                        onChange={this.onChange}
+                      />
+                    </td>
+                    <td>
+                      <button type="submit">Добавить</button>
+                    </td>
+                    <td>
+                      <input
+                        name="data12"
+                        size="10"
+                        type="text"
+                        value={data12}
+                        onChange={this.onChange}
+                      />
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </form>
           </div>

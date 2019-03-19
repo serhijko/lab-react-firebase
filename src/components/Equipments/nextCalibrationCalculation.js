@@ -1,11 +1,11 @@
 export default function nextDate(per, lastDate) {
   const day = new Date(lastDate).getDate();
-  const months = new Date(lastDate).getMonth() + 1 + per / 1;
+  const months = new Date(lastDate).getMonth() + per / 1;
   const month = months % 12;
   const year = new Date(lastDate).getFullYear() + (months - month) / 12;
 
   let insert1, insert2;
-  if (month < 10) {
+  if (month < 9) {
     insert1 = '-0';
   } else {
     insert1 = '-';
@@ -18,7 +18,7 @@ export default function nextDate(per, lastDate) {
   }
 
   const nextDate = year.toString().concat(
-    insert1, month, insert2, day
+    insert1, month + 1, insert2, day
   )
 
   return nextDate;

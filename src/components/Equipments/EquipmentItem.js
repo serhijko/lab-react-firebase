@@ -167,9 +167,7 @@ class EquipmentItem extends Component {
             <button onClick={this.onToggleEditMode07}>Править</button>
           ))}
         </td>
-        <td>
-          {toRussianDateFormat(equipment.data08)}
-        </td>
+        <td>{toRussianDateFormat(equipment.data08)}</td>
         <td>
           {editMode09 ? (
             <input
@@ -249,6 +247,7 @@ class EquipmentItem extends Component {
           ) : (
             <button onClick={this.onToggleEditMode12}>Править</button>
           ))}
+          {equipment.data12 && equipment.editedAt && ' '}
           {equipment.editedAt && <span>Изменено {toRussianDateFormat(equipment.editedAt)} {equipment.editedBy}</span>}
         </td>
       </tr>

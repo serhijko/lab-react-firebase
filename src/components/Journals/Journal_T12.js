@@ -28,10 +28,12 @@ class Journal_T12 extends Component {
       data08: '',
       data09: '',
       data10: '',
+      data11: '',
       data12: '',
       editMode: false,
       start: 0,
       users: null,
+      length: 0,
     };
   }
 
@@ -69,9 +71,14 @@ class Journal_T12 extends Component {
           this.setState({
             equipments: equipmentList,
             loading: false,
+            length: equipmentList.length,
           });
         } else {
-          this.setState({ equipments: null, loading: false });
+          this.setState({
+            equipments: null,
+            loading: false,
+            length: 0,
+          });
         }
       });
   }
@@ -96,9 +103,10 @@ class Journal_T12 extends Component {
       data05: this.state.data05,
       data06: this.state.data06,
       data07: this.state.data07,
-      data08: nextDate(this.state.data06, this.state.data07),
+      data08: this.setState({ data08: nextDate(this.state.data06, this.state.data07) }),
       data09: this.state.data09,
       data10: this.state.data10,
+      data11: this.setState({ data11: this.state.data08.getTime() }),
       data12: this.state.data12,
     });
 
@@ -113,6 +121,7 @@ class Journal_T12 extends Component {
       data08: '',
       data09: '',
       data10: '',
+      data11: null,
       data12: '',
     });
 
@@ -125,39 +134,43 @@ class Journal_T12 extends Component {
     }));
   };
 
-  onEditData06 = (equipment, data06, data08, authUser) => {
+  onEditData06 = (equipment, data06, data08, data11, authUser) => {
     this.props.firebase.equipment(equipment.uid).set({
       ...equipment,
       data06,
       data08,
+      data11,
       editedAt: this.props.firebase.serverValue.TIMESTAMP,
       editedBy: authUser.uid,
     });
   };
 
-  onEditData07 = (equipment, data07, data08, authUser) => {
+  onEditData07 = (equipment, data07, data08, data11, authUser) => {
     this.props.firebase.equipment(equipment.uid).set({
       ...equipment,
       data07,
       data08,
+      data11,
       editedAt: this.props.firebase.serverValue.TIMESTAMP,
       editedBy: authUser.uid,
     });
   };
 
-  onEditData09 = (equipment, data09, authUser) => {
+  onEditData09 = (equipment, data09, data11, authUser) => {
     this.props.firebase.equipment(equipment.uid).set({
       ...equipment,
       data09,
+      data11,
       editedAt: this.props.firebase.serverValue.TIMESTAMP,
       editedBy: authUser.uid,
     });
   };
 
-  onEditData10 = (equipment, data10, authUser) => {
+  onEditData10 = (equipment, data10, data11, authUser) => {
     this.props.firebase.equipment(equipment.uid).set({
       ...equipment,
       data10,
+      data11,
       editedAt: this.props.firebase.serverValue.TIMESTAMP,
       editedBy: authUser.uid,
     });
@@ -204,6 +217,8 @@ class Journal_T12 extends Component {
       data12,
       editMode,
       users,
+      start,
+      length,
     } = this.state;
 
     return (
@@ -223,9 +238,9 @@ class Journal_T12 extends Component {
               )}
             </button></h2>
     
-            {!loading && equipments && (
+            {!loading && equipments && start > 0 && (
               <button type="button" onClick={this.onPrevPage}>
-                Предыдущие
+                {(start - 5) ? (start - 5) : 1} — {start}
               </button>
             )}
             <form onSubmit={event => this.onCreateEquipment(event, authUser)}>
@@ -236,7 +251,7 @@ class Journal_T12 extends Component {
                     <th>Наименование оборудования (ИО, СИ)</th>
                     <th>Марка, тип</th>
                     <th>Заводской номер (инв. номер)</th>
-                    <th>Год выпуска (ввода в эксплу-атацию)</th>
+                    <th>Год выпуска (ввода в эксплуатацию)</th>
                     <th>Периодичность метролог. аттестации, поверки, калибровки, мес.</th>
                     <th>Дата последней аттестации, поверки, калибровки</th>
                     <th>Дата следующей аттестации, поверки, калибровки</th>
@@ -388,9 +403,9 @@ class Journal_T12 extends Component {
                 </tbody>
               </table>
             </form>
-            {!loading && equipments && (
+            {!loading && equipments && ((start === 0 && length === 5) || length === 6) && (
               <button type="button" onClick={this.onNextPage}>
-                Следующие
+                {start + 5} — {start + 10}
               </button>
             )}
           </div>

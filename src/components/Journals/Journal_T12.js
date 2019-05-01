@@ -31,9 +31,7 @@ class Journal_T12 extends Component {
       data11: '',
       data12: '',
       editMode: false,
-      start: 0,
       users: null,
-      length: 0,
     };
   }
 
@@ -55,9 +53,6 @@ class Journal_T12 extends Component {
 
     this.props.firebase
       .equipments()
-      .orderByChild('data01')
-      .startAt(this.state.start)
-      .endAt(this.state.start + 5)
       .on('value', snapshot => {
         const equipmentObject = snapshot.val();
         
@@ -187,20 +182,6 @@ class Journal_T12 extends Component {
     this.props.firebase.equipment(uid).remove();
   };
 
-  onPrevPage = () => {
-    this.setState(
-      state => ({ start: state.start - 5 }),
-      this.onListenForEquipments,
-    );
-  };
-
-  onNextPage = () => {
-    this.setState(
-      state => ({ start: state.start + 5 }),
-      this.onListenForEquipments,
-    );
-  };
-
   render() {
     const {
       loading,
@@ -217,8 +198,6 @@ class Journal_T12 extends Component {
       data12,
       editMode,
       users,
-      start,
-      length,
     } = this.state;
 
     return (
@@ -238,13 +217,8 @@ class Journal_T12 extends Component {
               )}
             </button></h2>
     
-            {!loading && equipments && start > 0 && (
-              <button type="button" onClick={this.onPrevPage}>
-                {(start - 5) ? (start - 5) : 1} — {start}
-              </button>
-            )}
             <form onSubmit={event => this.onCreateEquipment(event, authUser)}>
-              <table className="table">
+              <table className="scroll">
                 <thead>
                   <tr>
                     <th>№ п/п</th>
@@ -261,18 +235,18 @@ class Journal_T12 extends Component {
                     <th>Примечания</th>
                   </tr>
                   <tr>
-                    <th>1</th>
-                    <th>2</th>
-                    <th>3</th>
-                    <th>4</th>
-                    <th>5</th>
-                    <th>6</th>
-                    <th>7</th>
-                    <th>8</th>
-                    <th>9</th>
-                    <th>10</th>
-                    <th>11</th>
-                    <th>12</th>
+                    <th className="r2">1</th>
+                    <th className="r2">2</th>
+                    <th className="r2">3</th>
+                    <th className="r2">4</th>
+                    <th className="r2">5</th>
+                    <th className="r2">6</th>
+                    <th className="r2">7</th>
+                    <th className="r2">8</th>
+                    <th className="r2">9</th>
+                    <th className="r2">10</th>
+                    <th className="r2">11</th>
+                    <th className="r2">12</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -301,8 +275,9 @@ class Journal_T12 extends Component {
                   ) : (
                     <tr><td colSpan="12">Нет ИО и СИ ...</td></tr>
                   )}
-                
-                  <tr>
+                </tbody>
+                <tfoot>
+                <tr>
                     <td>
                       <input
                         name="data01"
@@ -400,14 +375,9 @@ class Journal_T12 extends Component {
                       />
                     </td>
                   </tr>
-                </tbody>
+                </tfoot>
               </table>
             </form>
-            {!loading && equipments && ((start === 0 && length === 5) || length === 6) && (
-              <button type="button" onClick={this.onNextPage}>
-                {start + 5} — {start + 10}
-              </button>
-            )}
           </div>
         )}
       </AuthUserContext.Consumer>

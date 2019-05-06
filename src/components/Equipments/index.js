@@ -7,7 +7,10 @@ import {
   AuthUserContext,
 } from '../Session';
 import { withFirebase } from '../Firebase';
-import EquipmentItem from './EquipmentItem';
+import EquipmentItem, {
+  nextDate,
+  nextCalibrationTime,
+} from './EquipmentItem';
 import '../Journals/Journal_T12.css';
 
 class Equipments extends Component {
@@ -200,15 +203,11 @@ class Equipments extends Component {
                 {loading && <tr><td colSpan="12">Загрузка...</td></tr>}
       
                 {equipments ? (
-                  equipments.map(equipment => ({
-                    ...equipment,
-                    user: users
-                      ? users[equipment.createdBy]
-                      : { createdBy: equipment.createdBy }
-                  })).map(equipment => (
+                  equipments.map(equipment => (
                     <EquipmentItem
                       key={equipment.uid}
                       authUser={authUser}
+                      users={users}
                       equipment={equipment}
                       editMode={editMode}
                       onEditData06={this.onEditData06}
@@ -245,4 +244,8 @@ export default compose(
   withFirebase,
 )(Equipments);
 
-export { EquipmentItem };
+export {
+  EquipmentItem,
+  nextDate,
+  nextCalibrationTime,
+};

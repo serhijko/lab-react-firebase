@@ -7,9 +7,12 @@ import {
   AuthUserContext,
 } from '../Session';
 import { withFirebase } from '../Firebase';
-import { EquipmentItem } from '../Equipments';
+import {
+  EquipmentItem,
+  nextDate,
+  nextCalibrationTime,
+} from '../Equipments';
 import './Journal_T12.css';
-import nextDate from '../Equipments/nextCalibrationCalculation';
 
 class Journal_T12 extends Component {
   constructor(props) {
@@ -66,13 +69,11 @@ class Journal_T12 extends Component {
           this.setState({
             equipments: equipmentList,
             loading: false,
-            length: equipmentList.length,
           });
         } else {
           this.setState({
             equipments: null,
             loading: false,
-            length: 0,
           });
         }
       });
@@ -88,6 +89,7 @@ class Journal_T12 extends Component {
   }
 
   onCreateEquipment = (event, authUser) => {
+    const nextCalibration = nextDate(this.state.data06, this.state.data07);
     this.props.firebase.equipments().push({
       createdAt: this.props.firebase.serverValue.TIMESTAMP,
       createdBy: authUser.uid,
@@ -98,10 +100,10 @@ class Journal_T12 extends Component {
       data05: this.state.data05,
       data06: this.state.data06,
       data07: this.state.data07,
-      data08: this.setState({ data08: nextDate(this.state.data06, this.state.data07) }),
+      data08: nextCalibration,
       data09: this.state.data09,
       data10: this.state.data10,
-      data11: this.setState({ data11: this.state.data08.getTime() }),
+      data11: nextCalibrationTime(nextCalibration, this.state.data09, this.state.data10),
       data12: this.state.data12,
     });
 
@@ -116,7 +118,7 @@ class Journal_T12 extends Component {
       data08: '',
       data09: '',
       data10: '',
-      data11: null,
+      data11: '',
       data12: '',
     });
 
@@ -253,15 +255,11 @@ class Journal_T12 extends Component {
                   {loading && <tr><td colSpan="12">Загрузка...</td></tr>}
         
                   {equipments ? (
-                    equipments.map(equipment => ({
-                      ...equipment,
-                      user: users
-                        ? users[equipment.createdBy]
-                        : { createdBy: equipment.createdBy }
-                    })).map(equipment => (
+                    equipments.map(equipment => (
                       <EquipmentItem
                         key={equipment.uid}
                         authUser={authUser}
+                        users={users}
                         equipment={equipment}
                         editMode={editMode}
                         onEditData06={this.onEditData06}
@@ -277,7 +275,7 @@ class Journal_T12 extends Component {
                   )}
                 </tbody>
                 <tfoot>
-                <tr>
+                  <tr>
                     <td>
                       <input
                         name="data01"

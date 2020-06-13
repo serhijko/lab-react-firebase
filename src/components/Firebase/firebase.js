@@ -60,6 +60,11 @@ class Firebase {
               dbUser.roles = [];
             }
 
+            // default empty period
+            if (!dbUser.period) {
+              dbUser.period = 45;
+            }
+
             // merge auth and db user
             authUser = {
               uid: authUser.uid,

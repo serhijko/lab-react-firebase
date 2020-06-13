@@ -7,6 +7,36 @@ const needsEmailVerification = authUser =>
   authUser &&
   !authUser.emailVerified;
 
+const DefaultComponent = ({
+  buttonTitle = 'Send confirmation E-Mail',
+  children,
+  onClick,
+  disabled
+}) => (
+  <div>
+    <p>{children}</p>
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+    >
+      {buttonTitle}
+    </button>
+  </div>
+);
+
+const MESSAGE_IF_EMAIL_IS_SENT = `
+  E-Mail confirmation sent: Check your E-Mails (Spam
+  folder included) for a confirmation E-Mail.
+  Refresh this page once you confirmed your E-Mail.
+`;
+
+const MESSAGE_IF_EMAIL_IS_NOT_SENT = `
+  Verify your E-Mail: Check your E-Mails (Spam folder
+  included) for a confirmation E-Mail or send
+  another confirmation E-Mail.
+`;
+
 const withEmailVerification = Component => {
   class WithEmailVerification extends React.Component {
     constructor(props) {
@@ -26,29 +56,16 @@ const withEmailVerification = Component => {
         <AuthUserContext.Consumer>
           {authUser =>
             needsEmailVerification(authUser) ? (
-              <div>
-                {this.state.isSent ? (
-                  <p>
-                    E-Mail confirmation sent: Check your E-Mails (Spam
-                    folder included) for a confirmation E-Mail.
-                    Refresh this page once you confirmed your E-Mail.
-                  </p>
-                ) : (
-                  <p>
-                    Verify your E-Mail: Check your E-Mails (Spam folder
-                    included) for a confirmation E-Mail or send
-                    another confirmation E-Mail.
-                  </p>
-                )}
-
-                <button
-                  type="button"
-                  onClick={this.onSendEmailVerification}
-                  disabled={this.state.isSent}
-                >
-                  Send confirmation E-Mail
-                </button>
-              </div>
+              <DefaultComponent
+                onClick={this.onSendEmailVerification}
+                disabled={this.state.isSent}
+              >
+                {this.state.isSent ? 
+                  MESSAGE_IF_EMAIL_IS_SENT
+                : 
+                  MESSAGE_IF_EMAIL_IS_NOT_SENT
+                }
+              </DefaultComponent>
             ) : (
               <Component {...this.props} />
             )

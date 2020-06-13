@@ -93,7 +93,7 @@ class Journal_T12 extends Component {
     this.props.firebase.equipments().push({
       createdAt: this.props.firebase.serverValue.TIMESTAMP,
       createdBy: authUser.uid,
-      data01: this.state.data01/1,
+      data01: parseInt(this.state.data01, 10),
       data02: this.state.data02,
       data03: this.state.data03,
       data04: this.state.data04,
@@ -131,52 +131,17 @@ class Journal_T12 extends Component {
     }));
   };
 
-  onEditData06 = (equipment, data06, data08, data11, authUser) => {
+  onEditData = (equipment, data, authUser) => {
+    const editingData = authUser ? (
+      {
+        editedAt: this.props.firebase.serverValue.TIMESTAMP,
+        editedBy: authUser.uid,
+      }
+    ) : {};
     this.props.firebase.equipment(equipment.uid).set({
       ...equipment,
-      data06,
-      data08,
-      data11,
-      editedAt: this.props.firebase.serverValue.TIMESTAMP,
-      editedBy: authUser.uid,
-    });
-  };
-
-  onEditData07 = (equipment, data07, data08, data11, authUser) => {
-    this.props.firebase.equipment(equipment.uid).set({
-      ...equipment,
-      data07,
-      data08,
-      data11,
-      editedAt: this.props.firebase.serverValue.TIMESTAMP,
-      editedBy: authUser.uid,
-    });
-  };
-
-  onEditData09 = (equipment, data09, data11, authUser) => {
-    this.props.firebase.equipment(equipment.uid).set({
-      ...equipment,
-      data09,
-      data11,
-      editedAt: this.props.firebase.serverValue.TIMESTAMP,
-      editedBy: authUser.uid,
-    });
-  };
-
-  onEditData10 = (equipment, data10, data11, authUser) => {
-    this.props.firebase.equipment(equipment.uid).set({
-      ...equipment,
-      data10,
-      data11,
-      editedAt: this.props.firebase.serverValue.TIMESTAMP,
-      editedBy: authUser.uid,
-    });
-  };
-
-  onEditData12 = (equipment, data12) => {
-    this.props.firebase.equipment(equipment.uid).set({
-      ...equipment,
-      data12,
+      ...data,
+      ...editingData,
     });
   };
 
@@ -184,22 +149,70 @@ class Journal_T12 extends Component {
     this.props.firebase.equipment(uid).remove();
   };
 
+  renderCell(i, dataXX) {
+    let name="data" + (i < 10 ? "0" : "") + i;
+    let size="";
+    switch(i) {
+      case 1:
+        size = "1";
+        break;
+      case 2:
+        size = "12";
+        break;
+      case 3: case 4:
+        size = "8";
+        break;
+      case 5: case 7: case 9: case 10: case 12:
+        size = "10";
+        break;
+      case 6:
+        size = "2";
+        break;
+      default:
+        break;
+    }
+
+    let type = "";
+    if (i === 6) {
+      type = "number";
+    } else if (i > 6 && i < 11) {
+      type = "date";
+    } else {
+      type = "text";
+    }
+
+    return (
+      <td key={name}>{(i === 11) ? (
+        <button type="submit">Добавить</button>
+      ) : ((i < 8 || i > 8) && 
+        <input
+          name={name}
+          size={size}
+          type={type}
+          value={dataXX}
+          onChange={this.onChange}
+        />
+      )}
+      </td>
+    );
+  }
+
+  renderCells(data) {
+    let cells = [];
+    for (let i = 1; i <= 12; i++) {
+      let name="data" + (i < 10 ? "0" : "") + i;
+      cells.push(this.renderCell(i, data[name]));
+    }
+    return cells;
+  }
+
   render() {
     const {
       loading,
       equipments,
-      data01,
-      data02,
-      data03,
-      data04,
-      data05,
-      data06,
-      data07,
-      data09,
-      data10,
-      data12,
       editMode,
       users,
+      ...data
     } = this.state;
 
     return (
@@ -262,11 +275,7 @@ class Journal_T12 extends Component {
                         users={users}
                         equipment={equipment}
                         editMode={editMode}
-                        onEditData06={this.onEditData06}
-                        onEditData07={this.onEditData07}
-                        onEditData09={this.onEditData09}
-                        onEditData10={this.onEditData10}
-                        onEditData12={this.onEditData12}
+                        onEditData={this.onEditData}
                         onRemoveEquipment={this.onRemoveEquipment}
                       />
                     ))
@@ -276,102 +285,7 @@ class Journal_T12 extends Component {
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td>
-                      <input
-                        name="data01"
-                        size="1"
-                        type="text"
-                        value={data01}
-                        onChange={this.onChange}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        name="data02"
-                        size="12"
-                        type="text"
-                        value={data02}
-                        onChange={this.onChange}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        name="data03"
-                        size="8"
-                        type="text"
-                        value={data03}
-                        onChange={this.onChange}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        name="data04"
-                        size="8"
-                        type="text"
-                        value={data04}
-                        onChange={this.onChange}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        name="data05"
-                        size="10"
-                        type="text"
-                        value={data05}
-                        onChange={this.onChange}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        name="data06"
-                        size="2"
-                        type="number"
-                        step="12"
-                        value={data06}
-                        onChange={this.onChange}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        name="data07"
-                        size="10"
-                        type="date"
-                        value={data07}
-                        onChange={this.onChange}
-                      />
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                      <input
-                        name="data09"
-                        size="10"
-                        type="date"
-                        value={data09}
-                        onChange={this.onChange}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        name="data10"
-                        size="10"
-                        type="date"
-                        value={data10}
-                        onChange={this.onChange}
-                      />
-                    </td>
-                    <td>
-                      <button type="submit">Добавить</button>
-                    </td>
-                    <td>
-                      <input
-                        name="data12"
-                        size="10"
-                        type="text"
-                        value={data12}
-                        onChange={this.onChange}
-                      />
-                    </td>
+                    {this.renderCells(data)}
                   </tr>
                 </tfoot>
               </table>

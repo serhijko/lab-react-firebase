@@ -24,6 +24,7 @@ class Equipments extends Component {
       date: new Date(),
       period: 45,
       users: null,
+      error: null,
     };
   }
 
@@ -85,7 +86,7 @@ class Equipments extends Component {
     const { period } = this.state;
 
     this.props.firebase
-      .then(authUser => {
+      .then((authUser) => {
         // Create the period for authUser in Firebase realtime database
         return this.props.firebase
           .user(authUser.user.uid)
@@ -98,12 +99,6 @@ class Equipments extends Component {
       });
 
     event.preventDefault();
-  };
-
-  onToggleEditMode = () => {
-    this.setState(state => ({
-      editMode: !state.editMode,
-    }));
   };
 
   onEditPeriod = (equipment, data06, data08, authUser) => {
@@ -125,20 +120,6 @@ class Equipments extends Component {
 
   onRemoveEquipment = uid => {
     this.props.firebase.equipment(uid).remove();
-  };
-
-  onPrevPage = () => {
-    this.setState(
-      state => ({ start: state.start - 5 }),
-      this.onListenForEquipments,
-    );
-  };
-
-  onNextPage = () => {
-    this.setState(
-      state => ({ start: state.start + 5 }),
-      this.onListenForEquipments,
-    );
   };
 
   render() {
